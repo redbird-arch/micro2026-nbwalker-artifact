@@ -1,0 +1,9 @@
+# =============================
+# MMU Configuration Template
+# =============================
+
+MMU:
+  type: "InfiniteMMU"
+
+L3TLB:
+  dispatcher: "roundrobin"

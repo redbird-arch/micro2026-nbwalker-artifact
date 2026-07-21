@@ -1,0 +1,7 @@
+# Artifact-evaluation runtime state and generated outputs
+.ae/
+runs/
+results/
+*.out
+*.err
+

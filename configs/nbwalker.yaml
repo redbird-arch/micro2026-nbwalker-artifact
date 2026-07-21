@@ -1,0 +1,11 @@
+# =============================
+# MMU Configuration Template
+# =============================
+
+MMU:
+  type: "NBWalker"
+
+  numPageWalkers: 64
+
+L3TLB:
+  dispatcher: "roundrobin"

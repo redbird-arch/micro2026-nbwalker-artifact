@@ -1,6 +1,8 @@
 import os
 import pandas as pd
-from benchmark import get_high_mpki_benchmarks
+import matplotlib.pyplot as plt
+import numpy as np
+from benchmark import get_high_mpki_benchmarks, get_short_name
 
 def harmonic_mean(df: pd.DataFrame) -> float:
     data = df.tolist()
@@ -34,7 +36,7 @@ def collect_performance_data(benchmark_name: str, input_dir: str) -> float:
             break
     return performance_data
 
-def generate_output_csv(
+def generate_output(
     baseline: pd.DataFrame,
     Opt1: pd.DataFrame,
     Opt2: pd.DataFrame,
@@ -137,6 +139,123 @@ def generate_output_csv(
     output_df.to_csv(output_path, index=False)
 
     print(f"Normalized performance data saved to: {output_path}")
+    
+    
+    # Set Arial font family
+    plt.rcParams["font.family"] = "Arial"
+    # For macOS, you might need to explicitly set the font file
+    plt.rcParams["font.sans-serif"] = ["Arial"]
+    plt.rcParams["mathtext.fontset"] = "custom"
+    plt.rcParams["mathtext.rm"] = "Arial"
+    plt.rcParams["mathtext.it"] = "Arial:italic"
+    plt.rcParams["mathtext.bf"] = "Arial:bold"
+    
+    plt.figure(figsize=(20, 4.5), dpi=300)
+    
+    bar_width = 0.15
+    r1 = np.arange(len(benchmarks) + 1) * (4 * bar_width + 0.2)
+    r2 = [x + bar_width for x in r1]
+    r3 = [x + bar_width for x in r2]
+    r4 = [x + bar_width for x in r3]
+    
+    bar1 = plt.bar(
+        r1,
+        baseline["Data"],
+        width=bar_width,
+        label="Baseline",
+        color="#8D2E2C",
+        edgecolor="black",
+        linewidth=1.5,
+    )
+    bar2 = plt.bar(
+        r2,
+        Opt1["Data"],
+        width=bar_width,
+        label="SnakeByte",
+        color="#C3D9F1",
+        edgecolor="black",
+        linewidth=1.5,
+    )
+    bar3 = plt.bar(
+        r3,
+        Opt2["Data"],
+        width=bar_width,
+        label="NBWalker+AMR",
+        color="#5D73A1",
+        edgecolor="black",
+        linewidth=1.5,
+    )
+    bar4 = plt.bar(
+        r4,
+        Opt3["Data"],
+        width=bar_width,
+        label="NBWalker+AMR+SnakeByte",
+        color="#313A5B",
+        edgecolor="black",
+        linewidth=1.5,
+    )
+    
+    for bar in bar1 + bar2 + bar3 + bar4:
+        height = bar.get_height()
+        x = bar.get_x() + bar.get_width() / 2
+
+        if height >= 8:
+            plt.annotate(
+                f"{height:.2f}",
+                xy=(x, 7.1),
+                xytext=(0, 0),  # 相对偏移 (0,15) 表示向上15pt
+                textcoords="offset points",
+                ha="center",
+                va="bottom",
+                fontsize=26,
+                fontweight="bold",
+                bbox=dict(
+                    facecolor="white",
+                    edgecolor="black",
+                    boxstyle="round,pad=0.1",
+                ),
+                # arrowprops=dict(arrowstyle="-", color="red", lw=2),
+            )
+    
+    plt.xlim(min(r1) - bar_width, max(r4) + bar_width)
+    plt.xticks(
+        [r + 1.5 * bar_width for r in r1],
+        [get_short_name(benchmarks[i]) for i in range(len(benchmarks))] + ["HMean"],
+        fontsize=36,
+        fontweight="bold",
+    )
+    plt.ylabel("Speedup", fontsize=36, fontweight="bold")
+    plt.yticks(
+        np.arange(0, 8.1, 2),
+        fontsize=36,
+        fontweight="bold",
+    )
+    plt.ylim(0, 8)
+    plt.legend(
+        loc="upper center",
+        ncol=2,
+        bbox_to_anchor=(0.5, 1),
+        bbox_transform=plt.gcf().transFigure,  # 使用图形坐标系
+        frameon=True,
+        fancybox=True,
+        framealpha=0.7,
+        prop={"weight": "bold", "size": 26},
+    )
+    plt.tight_layout(rect=[0, 0, 1, 0.825])
+    plt.grid(axis="y", alpha=0.3)
+    plt.axhline(y=1, color="red", linewidth=0.8, linestyle="--")
+
+    ax = plt.gca()
+
+    # 设置图的边框加粗
+    for spine in ax.spines.values():
+        spine.set_linewidth(1.75)  # 设置边框宽度为 2.5，可根据需要调整
+
+    output_file = os.path.join(
+        output_dir, "figure_26"
+    )
+    plt.savefig(output_file + ".png")
+    print(f"Plot saved to {output_file}")
 
 if __name__ == "__main__":
     baseline = pd.DataFrame(columns=["Benchmark", "Data"])
@@ -157,7 +276,7 @@ if __name__ == "__main__":
         Opt2     = append_row(Opt2,     benchmark, os.path.join(os.environ["PROJECT_ROOT"], "results", "UVM+NBWalker+AMR"))
         Opt3     = append_row(Opt3,     benchmark, os.path.join(os.environ["PROJECT_ROOT"], "results", "UVM+SnakeByte+NBWalker+AMR"))
 
-    generate_output_csv(
+    generate_output(
         baseline=baseline.copy(),
         Opt1=Opt1.copy(),
         Opt2=Opt2.copy(),

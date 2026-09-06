@@ -251,6 +251,8 @@ func (s *SnapshotReserver) GetReserveCount(hpOcc int, normOcc int) int {
 func (m *CaPWQMonitor) RegisterL1VCache(l1v MonitorComponent) {
 	l1v.InitMonitorStats()
 	m.L1VCaches = append(m.L1VCaches, l1v)
+
+	l1v.SentCommand(4)
 }
 
 func (m *CaPWQMonitor) RegisterPageWalker(walker MonitorComponent) {

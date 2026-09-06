@@ -219,7 +219,7 @@ func (b *Builder) buildStages(c *Cache) {
 
 	c.extendBits = b.extendBits
 	c.offsetMask = (1 << c.extendBits) - 1
-	c.numReservedPTWEntry = 4
+	c.numReservedPTWEntry = 0
 }
 
 func (b *Builder) assertAllRequiredInformationIsAvailable() {

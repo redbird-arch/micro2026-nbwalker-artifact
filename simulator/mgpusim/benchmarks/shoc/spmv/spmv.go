@@ -55,6 +55,11 @@ type Benchmark struct {
 	matrix    csr.Matrix
 }
 
+const (
+	maxKernelIndex = int64(1<<31 - 1)
+	randomSeed     = int64(1)
+)
+
 // NewBenchmark creates a new benchmark
 func NewBenchmark(driver *driver.Driver) *Benchmark {
 	b := new(Benchmark)
@@ -111,13 +116,15 @@ func (b *Benchmark) initMem() {
 	fmt.Printf("Number of non-zero elements %d\n", b.nItems)
 
 	b.matrix = csr.
-		MakeMatrixGenerator(uint32(b.Dim), uint32(b.nItems)).
+		MakeMatrixGeneratorWithSeed(
+			uint32(b.Dim), uint32(b.nItems), randomSeed).
 		GenerateMatrix()
 	b.vec = make([]float32, b.Dim)
 	b.out = make([]float32, b.Dim)
+	rng := rand.New(rand.NewSource(randomSeed))
 
 	for j := int32(0); j < b.Dim; j++ {
-		b.vec[j] = (rand.Float32() * b.maxval)
+		b.vec[j] = rng.Float32() * b.maxval
 	}
 
 	nItemsBytes := uint64(b.nItems) * 4

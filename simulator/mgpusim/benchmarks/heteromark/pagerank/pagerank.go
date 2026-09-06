@@ -108,7 +108,8 @@ func (b *Benchmark) initMem() {
 	b.hPageRank = make([]float32, b.NumNodes)
 	b.verPageRank = make([]float32, b.NumNodes)
 	b.verPageRankTemp = make([]float32, b.NumNodes)
-	b.hMatrix = csr.MakeMatrixGenerator(b.NumNodes, b.NumConnections).
+	b.hMatrix = csr.MakeMatrixGeneratorWithSeed(
+		b.NumNodes, b.NumConnections, 1).
 		GenerateMatrix()
 
 	for i := uint32(0); i < b.NumNodes; i++ {

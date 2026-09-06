@@ -9,6 +9,7 @@ type MatrixGenerator struct {
 	values                   []float32
 	positionOccupied         map[uint64]bool
 	xCoordIndex, yCoordIndex map[uint32][]uint32
+	rand                     *rand.Rand
 }
 
 // MakeMatrixGenerator returns a matrixGenerator
@@ -16,6 +17,19 @@ func MakeMatrixGenerator(numNode, numConnection uint32) MatrixGenerator {
 	return MatrixGenerator{
 		numNode:       numNode,
 		numConnection: numConnection,
+	}
+}
+
+// MakeMatrixGeneratorWithSeed returns a matrix generator that uses an
+// independent random source initialized with the given seed.
+func MakeMatrixGeneratorWithSeed(
+	numNode, numConnection uint32,
+	seed int64,
+) MatrixGenerator {
+	return MatrixGenerator{
+		numNode:       numNode,
+		numConnection: numConnection,
+		rand:          rand.New(rand.NewSource(seed)),
 	}
 }
 
@@ -111,7 +125,7 @@ func (g MatrixGenerator) sumColumn(i uint32) float32 {
 
 func (g *MatrixGenerator) generateOneConnection() {
 	x, y := g.generateUnoccupiedPosition()
-	v := rand.Float32()
+	v := g.randomFloat32()
 	g.xCoords = append(g.xCoords, x)
 	g.yCoords = append(g.yCoords, y)
 	g.values = append(g.values, v)
@@ -128,13 +142,27 @@ func (g *MatrixGenerator) generateOneConnection() {
 
 func (g MatrixGenerator) generateUnoccupiedPosition() (x, y uint32) {
 	for {
-		x = uint32(rand.Int()) % g.numNode
-		y = uint32(rand.Int()) % g.numNode
+		x = uint32(g.randomInt()) % g.numNode
+		y = uint32(g.randomInt()) % g.numNode
 		if !g.isPositionOccupied(x, y) {
 			g.markPositionOccupied(x, y)
 			return
 		}
 	}
+}
+
+func (g MatrixGenerator) randomFloat32() float32 {
+	if g.rand != nil {
+		return g.rand.Float32()
+	}
+	return rand.Float32()
+}
+
+func (g MatrixGenerator) randomInt() int {
+	if g.rand != nil {
+		return g.rand.Int()
+	}
+	return rand.Int()
 }
 
 func (g MatrixGenerator) isPositionOccupied(x, y uint32) bool {

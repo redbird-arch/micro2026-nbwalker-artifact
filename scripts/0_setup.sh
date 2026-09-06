@@ -74,13 +74,13 @@ _nbwalker_setup_main() {
     mkdir -p "${WORKTREE_ROOT}" || return 1
 
     _nbwalker_setup_worktree "${PROJECT_ROOT}" "${WORKTREE_ROOT}" \
-        "AE-NBWalker" "94184ea1f358d490f4bc14f462722497aeb0b0d4" || return 1
+        "AE-NBWalker" "5d0bd66299ad8ff4d72860486fcad09c09ed9915" || return 1
     _nbwalker_setup_worktree "${PROJECT_ROOT}" "${WORKTREE_ROOT}" \
-        "AE-SoftWalker" "7cbf13b1b7579aafdbaca7be99c43030525933e0" || return 1
+        "AE-SoftWalker" "987a97579161cf60750ea50d493e661774447a4d" || return 1
     _nbwalker_setup_worktree "${PROJECT_ROOT}" "${WORKTREE_ROOT}" \
-        "AE-SnakeByte" "e0baeb81c7202f77042c1e78f3441f23ac130b4a" || return 1
+        "AE-SnakeByte" "d3b6397d1829b1a065b9f99b1f9476ea421f86ab" || return 1
     _nbwalker_setup_worktree "${PROJECT_ROOT}" "${WORKTREE_ROOT}" \
-        "AE-UVM" "70490f8271162a0a822dd89881dc2bdbde411989" || return 1
+        "AE-UVM" "269a80985fc2a012a44c9294cc49da1a40471e52" || return 1
 
     export WORKTREE_ROOT
     export PROJECT_ROOT
